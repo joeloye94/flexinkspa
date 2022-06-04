@@ -1,10 +1,25 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <PageHeader />
+  <PageBody />
+  <PageFooter />
 </template>
+<!--https://www.digitalocean.com/community/tutorials/how-to-generate-a-vue-js-single-page-app-with-vue-create-->
+
+<script>
+import PageHeader from './components/header/PageHeader.vue'
+import PageBody from './components/body/PageBody.vue'
+import PageFooter from './components/footer/PageFooter.vue'
+
+
+export default {
+  name: 'App',
+  components: {
+    PageHeader,
+    PageFooter,
+    PageBody
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
@@ -14,7 +29,9 @@
   text-align: center;
   color: #2c3e50;
 }
-
+body{
+  margin:0px
+}
 nav {
   padding: 30px;
 
@@ -27,4 +44,5 @@ nav {
     }
   }
 }
+
 </style>
