@@ -31,11 +31,12 @@ export default {
           this.appendMenu(data)
         })
         .catch(error=>{
-          alert("navi error")
+          alert("code error")
         })
     },
     appendMenu(data){
       this.menuList = data;
+      console.log(this.menuList)
     }
   }
 }

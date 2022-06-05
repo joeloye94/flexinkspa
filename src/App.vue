@@ -4,8 +4,7 @@
   <PageFooter />
 </template>
 <!--https://www.digitalocean.com/community/tutorials/how-to-generate-a-vue-js-single-page-app-with-vue-create-->
-
-<!--testing-->
+<!--https://cdmoro.github.io/bootstrap-vue-3/-->
 
 <script>
 import PageHeader from './components/header/PageHeader.vue'
