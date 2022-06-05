@@ -17,12 +17,12 @@
         </b-tbody>
     </b-table-simple>
 
-    <!--<b-pagination
+    <b-pagination
       v-model="ex2CurrentPage"
       :total-rows="ex2Rows"
       :per-page="ex2PerPage"
       first-number
-    ></b-pagination>-->
+    ></b-pagination>
 
   </div>
 </template>
