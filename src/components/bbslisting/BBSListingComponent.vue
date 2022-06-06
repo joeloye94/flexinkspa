@@ -38,8 +38,7 @@ export default {
       }],
       currentPage:1,
       perPage: 10,
-      totalItems: 0,
-      listing:{}
+      totalItems: 0
     }
   },
   components:{

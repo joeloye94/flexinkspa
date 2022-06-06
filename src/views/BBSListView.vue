@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="">
     <h1>BBS View</h1>
 
     <BBSListingComponent />

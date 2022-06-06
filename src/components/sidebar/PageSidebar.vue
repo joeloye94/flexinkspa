@@ -36,7 +36,7 @@ export default {
     },
     appendMenu(data){
       this.menuList = data;
-      console.log(this.menuList)
+      //console.log(this.menuList)
     }
   }
 }

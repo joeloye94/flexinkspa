@@ -35,7 +35,7 @@ export default {
           //in case logo dynamic
           setTimeout(()=>{
             let headerHeight = document.querySelector("#pageHeader").clientHeight;
-            console.log(headerHeight);
+            //console.log(headerHeight);
             document.querySelector("#app").style.marginTop = headerHeight+"px";
           },10)
       }

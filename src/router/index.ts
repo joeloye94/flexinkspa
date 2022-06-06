@@ -18,22 +18,24 @@ const routes: Array<RouteRecordRaw> = [
   {
     path:'/bbs/list',
     name:'bbsList',
-    component:() => import(/* webpackChunkName: "about" */ '../views/BBSListView.vue')
+    component:() => import('../views/BBSListView.vue')
   },
   {
     path:'/bbs/list/view/:id',
     name:'bbsListItemView',
-    component:() => import(/* webpackChunkName: "about" */ '../views/BBSListItemView.vue')
+    component:() => import('../views/BBSListItemView.vue'),
+    //props:true
+    props: route => ({ queryID: route.params.id })
   },
   {
     path:'/bbs/list/view/modify/:id',
     name:'bbsListModify',
-    component:() => import(/* webpackChunkName: "about" */ '../views/BBSListItemEditView.vue')
+    component:() => import('../views/BBSListItemEditView.vue')
   },
   {
     path:'/bbs/register',
     name:'bbsListAdd',
-    component:() => import(/* webpackChunkName: "about" */ '../views/BBSListItemEditView.vue')
+    component:() => import('../views/BBSListItemEditView.vue')
   }
 ]
 
