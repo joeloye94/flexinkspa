@@ -1,13 +1,5 @@
 <template>
-<!--
-  file upload:
-    POST - http://idc.flexink.com:9250/api/public/bbs/post/file/54/45/73
-    DEL - http://idc.flexink.com:9250/api/public/bbs/post/file/49/40/64 
 
-  listing item
-    POST - http://idc.flexink.com:9250/api/public/bbs/post
-    DEL - http://idc.flexink.com:9250/api/public/bbs/post/42
--->
   <div :items="items" >
   <div class="bbs__listingitem" ><!--v-if="loaded"-->
     <b-table-simple responsive>
@@ -21,7 +13,7 @@
             id="titleFormGroup"
             label-for="title"
             >
-            <b-form-input id="title" v-model="items.title" @input="testLog()"></b-form-input>
+            <b-form-input id="title" v-model="items.title"></b-form-input>
             </b-form-group>
           </b-td>
           
@@ -34,7 +26,6 @@
               v-model="items.content"
               rows="3"
               max-rows="6"
-              @input="testLog()"
             ></b-form-textarea>
             
           </b-td>
@@ -49,7 +40,6 @@
                 <b-button variant="danger" @click="removeFile(file)">x</b-button>
               </p>
             </div>
-            <div v-if="!items.attachedFile">No files</div>
 
             <!--file input-->
           </b-td>
@@ -66,17 +56,17 @@
           List
         </b-button>
       </router-link>
-      <b-button @click="removeItem(items)">
+      <b-button @click="removeItem()">
         Delete
       </b-button>
-      <b-button @click="modifyItem(items)">
+      <b-button @click="modifyItem()">
         Modify
       </b-button>
     </div>
 
     <div v-if="!isEdit">
       
-      <b-button>
+      <b-button @click="addItem()">
         Save
       </b-button>
     </div>
@@ -85,6 +75,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
   name: 'BBSListItemEditComponent',
@@ -129,7 +120,6 @@ export default {
     //else{
       //this.loaded = true;
     //}
-    
   },
   computed:{
     isEdit(){
@@ -141,9 +131,6 @@ export default {
     computeContent(value){
       return value ? value : "-"
     },
-    testLog(){
-      console.log(this.$data.items)
-    },
     async getBBSListingItem(){
       //http://idc.flexink.com:9250/api/public/bbs/post/44
       await fetch("http://idc.flexink.com:9250/api/public/bbs/post/"+this.$props.queryId)
@@ -151,7 +138,13 @@ export default {
           response.json()
         )
         .then(items=>{
+          /*if(items.code == "200"){
+            this.items = items;
+          }else{
+            alert("error getting id")
+          }*/
           this.items = items;
+          this.isError = false;          
           //this.loaded = true;
         })
         .catch(error=>{
@@ -159,13 +152,79 @@ export default {
           //this.loaded = true;
         })
     },
-    removeItem(items){
+    
+  /*file upload:
+    POST - http://idc.flexink.com:9250/api/public/bbs/post/file/54/45/73
+    DEL - http://idc.flexink.com:9250/api/public/bbs/post/file/49/40/64 
+
+  listing item
+    POST - http://idc.flexink.com:9250/api/public/bbs/post
+    DEL - http://idc.flexink.com:9250/api/public/bbs/post/42
+    */
+    removeItem(){
+      let confirmation = confirm("Do you want to delete post?");
+      let comp = this;
+
+      if(confirmation === true){
+        axios.delete("http://idc.flexink.com:9250/api/public/bbs/post/" + this.$props.queryId, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+        .then(function(response){
+          console.log(response.data);
+          //why is "this" not defined???
+          alert("successfully deleted post");
+          comp.$router.push('/bbs/list')
+        })
+        .catch(function (error) {
+          console.log(error); 
+        });
+      }
+      
+      
       
     },
     removeFile(file){
       
     },
-    modifyItem(item){
+    modifyItem(){
+      let formData = this.$data.items;
+      let comp = this;
+
+      axios.put("http://idc.flexink.com:9250/api/public/bbs/post/" + this.$props.queryId, formData, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+        .then(function(response){
+          console.log(response.data);
+          alert("successfuly updated post")
+          comp.$router.push('/bbs/list')
+        })
+        .catch(function (error) {
+          console.log(error); 
+        });
+
+    },
+    //register
+    addItem(){
+      let formData = this.$data.items;
+      let comp = this;
+      
+      axios.post("http://idc.flexink.com:9250/api/public/bbs/post", formData, {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+        .then(function(response){
+          console.log(response.data);
+          alert("successfuly added post")
+          comp.$router.push('/bbs/list')
+        })
+        .catch(function (error) {
+          console.log(error); 
+        });
 
     }
   },

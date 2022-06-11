@@ -41,7 +41,18 @@ const routes: Array<RouteRecordRaw> = [
     component:() => import('../views/BBSListItemAddView.vue'),
     //differentiate if adding or editing list item
     props: route => ({ route: route.params })
+  },
+  {
+    path: '/member/register',
+    name: 'memberRegister',
+    component: () => import('../views/MemberRegisterView.vue')
+  },
+  {
+    path: '/member/list',
+    name: 'memberList',
+    component: () => import('../views/MemberListView.vue')
   }
+
 ]
 
 const router = createRouter({

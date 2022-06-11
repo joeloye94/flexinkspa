@@ -46,7 +46,7 @@
           files:items.attachedFile
         }*/
       }">
-        <b-button>
+        <b-button v-if="!isError">
           Modify
         </b-button>
       </router-link>
@@ -63,7 +63,8 @@ export default {
     return{
       queryID:this.$props.queryId,
       loaded:false,
-      items:[]
+      items:[],
+      isError:true,
       /*items:{
         "id": 35,
         "title": "웹 제목",
@@ -110,12 +111,18 @@ export default {
           response.json()
         )
         .then(items=>{
+          /*if(items.code == "200"){
+            this.items = items;
+            this.isError = false;
+            
+          }else{
+            alert("error getting id")
+          }*/
           this.items = items;
-          //this.loaded = true;
+          this.isError = false;
         })
         .catch(error=>{
           console.error(error)
-          //this.loaded = true;
         })
     },
     async downloadFile(file){

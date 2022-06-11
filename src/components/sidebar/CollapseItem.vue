@@ -42,6 +42,7 @@ export default {
     menuList:Array
   },
   mounted(){
+    
   },
   methods:{
   }
