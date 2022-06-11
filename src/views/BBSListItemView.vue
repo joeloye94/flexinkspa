@@ -4,14 +4,7 @@
 
     <!--this will be the id view page-->
     <BBSListItemViewComponent :query-id=" $route.params.id " />
-    <div>
-      <b-button>
-        <router-link to="/bbs/list">Back</router-link>
-      </b-button>
-      <b-button href="#">
-        <router-link :to="'/bbs/list/view/modify/'+$route.params.id">Modify</router-link>
-      </b-button>
-    </div>
+    
     
   </div>
 </template>

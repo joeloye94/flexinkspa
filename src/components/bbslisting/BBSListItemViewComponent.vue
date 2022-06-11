@@ -1,35 +1,56 @@
 <template>
-  
-  <div class="bbs__listingitem" :items="items" v-if="loaded">
-    <b-table-simple responsive>
-      
-      <b-tbody>
-        <b-tr >
-          <b-th>Title</b-th>
-          <b-td>{{ computeContent(items.title) }}</b-td>
-          
-        </b-tr>
-        <b-tr>
-          <b-th>Content</b-th>
-          <b-td>{{ computeContent(items.content) }}</b-td>
-          
-        </b-tr>
-        <b-tr>
-          <b-th>Files</b-th>
-          <b-td>
-            <div v-if="items.attachedFile" v-for="file in items.attachedFile.attachedFileInfos">
-              <b-link href="javascript:;" @click="downloadFile(file)">
-                {{file.filename}}
-              </b-link>
-            </div>
-            <div v-if="!items.attachedFile">No files</div>
-          </b-td>
-          
-        </b-tr>
-      </b-tbody>
-      
-    </b-table-simple>
+  <div :items="items">
+    <div class="bbs__listingitem" ><!--v-if="loaded"-->
+      <b-table-simple responsive>
+        
+        <b-tbody>
+          <b-tr >
+            <b-th>Title</b-th>
+            <b-td>{{ computeContent(items.title) }}</b-td>
+            
+          </b-tr>
+          <b-tr>
+            <b-th>Content</b-th>
+            <b-td>{{ computeContent(items.content) }}</b-td>
+            
+          </b-tr>
+          <b-tr>
+            <b-th>Files</b-th>
+            <b-td>
+              <div v-if="items.attachedFile" v-for="file in items.attachedFile.attachedFileInfos">
+                <b-link href="javascript:;" @click="downloadFile(file)">
+                  {{file.filename}}
+                </b-link>
+              </div>
+              <div v-if="!items.attachedFile">No files</div>
+            </b-td>
+            
+          </b-tr>
+        </b-tbody>
+        
+      </b-table-simple>
 
+    </div>
+    <div>
+      <router-link to="/bbs/list">
+        <b-button>
+          Back
+        </b-button>
+      </router-link>
+      <router-link :to="{
+        path:'/bbs/list/view/modify/'+$route.params.id,
+        /*name:'bbsListModify',
+        params:{
+          title:items.title,
+          content:items.content,
+          files:items.attachedFile
+        }*/
+      }">
+        <b-button>
+          Modify
+        </b-button>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -89,17 +110,16 @@ export default {
           response.json()
         )
         .then(items=>{
-          console.log(items)
           this.items = items;
-          this.loaded = true;
+          //this.loaded = true;
         })
         .catch(error=>{
           console.error(error)
-          this.loaded = true;
+          //this.loaded = true;
         })
     },
     async downloadFile(file){
-      console.log(file)
+      
       let idOne = this.items.id;
       let idTwo = this.items.attachedFile.id;
       let idThree = file.id;

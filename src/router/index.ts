@@ -30,12 +30,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path:'/bbs/list/view/modify/:id',
     name:'bbsListModify',
-    component:() => import('../views/BBSListItemEditView.vue')
+    component:() => import('../views/BBSListItemEditView.vue'),
+    props: route => ({ routeParams: route.params })
+    //enable props for edit view
+    
   },
   {
     path:'/bbs/register',
     name:'bbsListAdd',
-    component:() => import('../views/BBSListItemEditView.vue')
+    component:() => import('../views/BBSListItemAddView.vue'),
+    //differentiate if adding or editing list item
+    props: route => ({ route: route.params })
   }
 ]
 
