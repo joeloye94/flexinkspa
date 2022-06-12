@@ -33,15 +33,51 @@
         </b-tr>
         <b-tr>
           <b-th>Files</b-th>
-          <b-td>
-            <div v-if="items.attachedFile" v-for="file in items.attachedFile.attachedFileInfos">
+          <!--
+            
+            EDIT INTERFACE
+          
+          -->
+          <b-td v-if="isEdit">
+            <div v-if="items.attachedFile.attachedFileInfos" v-for="file in items.attachedFile.attachedFileInfos">
               <p>
-                {{file.filename}} 
+                {{getOriginalFilename(file)}} 
+                <!--file.id ? file.filename : file.originalFilename-->
+                <b-button v-if="file.id" variant="danger" @click="removeExistingFile(file)">x</b-button>
+                <b-button v-if="file.originalFilename" variant="danger" @click="removeFile(file)">x</b-button>
+              </p>
+            </div>
+
+            <!--file input-->
+            <!--bootstrap vue file input not supported-->
+            <b-button variant="info" @click="this.$refs.bbsFileinputEdit.click()" >Choose File</b-button>
+            <!--currently, if user removed and upload the same file again, no file uploading will happen-->            
+            <input ref="bbsFileinputEdit" type="file" id="bbsFileinputEdit" class="bbs__fileinput d-none" @change="uploadFile($event)"/>
+          </b-td>
+
+
+          <!--
+
+            REGISTER INTERFACE
+
+          -->
+          <b-td v-if="!isEdit">
+            <div v-if="items.attachedFile.attachedFileInfos" v-for="file in items.attachedFile.attachedFileInfos">
+              <p>
+                {{file.originalFilename}} 
                 <b-button variant="danger" @click="removeFile(file)">x</b-button>
               </p>
             </div>
 
             <!--file input-->
+            <!--bootstrap vue file input not supported-->
+            <b-button variant="info" @click="this.$refs.bbsFileinput.click()" >Choose File</b-button>
+            <!--currently, if user removed and upload the same file again, no file uploading will happen-->            
+            <input ref="bbsFileinput" 
+              type="file" 
+              id="bbsFileinput" 
+              class="bbs__fileinput d-none" 
+              @change="uploadFile($event)"/>
           </b-td>
           
         </b-tr>
@@ -76,6 +112,7 @@
 
 <script>
 import axios from 'axios';
+import {ref} from 'vue';
 
 export default {
   name: 'BBSListItemEditComponent',
@@ -84,7 +121,14 @@ export default {
     return{
       queryID:this.$props.queryId,
       loaded:false,
-      items:{}
+      items:{
+        title: "",
+        content: "",
+        attachedFile: {
+            attachedFileInfos: []
+        }
+      }
+
       /*items:{
         "id": 35,
         "title": "웹 제목",
@@ -117,6 +161,7 @@ export default {
     if(this.isEdit){
       this.getBBSListingItem()
     }
+    
     //else{
       //this.loaded = true;
     //}
@@ -125,9 +170,17 @@ export default {
     isEdit(){
       return this.$route.fullPath.indexOf("modify") > -1
     }
+    
 
   },
   methods:{
+    getOriginalFilename(file){
+      return file.id ? file.filename : file.originalFilename
+    },
+    //trigger click vanilla
+    triggerFileinput(){
+      document.querySelector('[data-fileInput]').click();
+    },
     computeContent(value){
       return value ? value : "-"
     },
@@ -153,7 +206,9 @@ export default {
         })
     },
     
-  /*file upload:
+  /*https://dev.to/ljnce/use-axios-api-with-vue-cli-54i2
+  
+  file upload:
     POST - http://idc.flexink.com:9250/api/public/bbs/post/file/54/45/73
     DEL - http://idc.flexink.com:9250/api/public/bbs/post/file/49/40/64 
 
@@ -172,7 +227,7 @@ export default {
           }
         })
         .then(function(response){
-          console.log(response.data);
+          //console.log(response.data);
           //why is "this" not defined???
           alert("successfully deleted post");
           comp.$router.push('/bbs/list')
@@ -185,12 +240,94 @@ export default {
       
       
     },
+    uploadFile(event){
+      let comp = this;
+      //console.log(event.target.files)
+      if(event.target.files.length > 0){
+        let formData = new FormData();
+        formData.append('file', event.target.files[0]);
+        axios.post("http://idc.flexink.com:9250/api/public/bbs/post/file", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+            //"Accept":'*/*'
+          }
+        })
+        .then(function(response){
+
+          //push one by one
+          //console.log(response.data);
+          comp.$data.items.attachedFile.attachedFileInfos.push(response.data[0])
+          console.log(comp.$data)
+
+          //refresh file input here
+          //this.$refs.bbsFileinput.remove()
+          
+          
+        })
+        //file size limit apparently
+        .catch(function (error) {
+          console.log(error); 
+        });
+      }
+    },
     removeFile(file){
-      
+      let comp = this;
+      if(file){
+        //http://idc.flexink.com:9250/api/public/bbs/post/file/20220413103126464-09a035ca-7686-4f93-a1b0-099666f3aa1d.png?lang=ko---
+
+        let bbsFilename = file.filename;
+        axios.delete("http://idc.flexink.com:9250/api/public/bbs/post/file/" + bbsFilename)
+        .then(function(response){
+          //console.log(response.data);
+          let filteredFileInput = comp.$data.items.attachedFile.attachedFileInfos.filter( data =>{
+            return data.filename != file.filename
+          })
+          comp.$data.items.attachedFile.attachedFileInfos = filteredFileInput;
+
+          console.log(comp.$data)
+        })
+        .catch(function (error) {
+          console.log(error); 
+        });
+
+      }
+    },
+    removeExistingFile(file){
+      let comp = this;
+
+      if(file){
+        let postId = this.$data.items.id;
+        let fileId = this.$data.items.attachedFile.id;
+        let fileInfoId = file.id;
+
+        //let bbsFilename = file.filename;
+
+        axios.delete(`http://idc.flexink.com:9250/api/public/bbs/post/file/${postId}/${fileId}/${fileInfoId}`)
+        .then(function(response){
+          //console.log(response.data);
+          let filteredFileInput = comp.$data.items.attachedFile.attachedFileInfos.filter( data =>{
+            return data.id != file.id
+          })
+          comp.$data.items.attachedFile.attachedFileInfos = filteredFileInput;
+
+          console.log(comp.$data)
+        })
+        .catch(function (error) {
+          console.log(error); 
+        });
+      }
     },
     modifyItem(){
       let formData = this.$data.items;
       let comp = this;
+
+      //JSON for updating the Post - Same with the registering. Just send new file infos.
+      //remove existing files
+      formData.attachedFile.attachedFileInfos = formData.attachedFile.attachedFileInfos.filter(data=>{
+        //if has id, remove
+        return !Object.keys(data).includes('id')
+      })
+      console.log(formData)
 
       axios.put("http://idc.flexink.com:9250/api/public/bbs/post/" + this.$props.queryId, formData, {
           headers: {
