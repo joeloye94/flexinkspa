@@ -35,7 +35,15 @@
           <b-th>Files</b-th>
           <!--
             
+
+
+
+
             EDIT INTERFACE
+
+
+
+
           
           -->
           <b-td v-if="isEdit">
@@ -51,14 +59,29 @@
             <!--file input-->
             <!--bootstrap vue file input not supported-->
             <b-button variant="info" @click="this.$refs.bbsFileinputEdit.click()" >Choose File</b-button>
-            <!--currently, if user removed and upload the same file again, no file uploading will happen-->            
-            <input ref="bbsFileinputEdit" type="file" id="bbsFileinputEdit" class="bbs__fileinput d-none" @change="uploadFile($event)"/>
+
+            <!--currently, if user removed and upload the same file again, no file uploading will happen-->   
+            <!--re-render hack-->           
+            <input ref="bbsFileinputEdit" 
+              type="file" 
+              id="bbsFileinputEdit" 
+              class="bbs__fileinput d-none" 
+              @change="uploadFile($event)"
+              v-if="!rerenderFileinput" />
           </b-td>
 
 
           <!--
 
+
+
+
+
             REGISTER INTERFACE
+
+
+
+            
 
           -->
           <b-td v-if="!isEdit">
@@ -72,12 +95,14 @@
             <!--file input-->
             <!--bootstrap vue file input not supported-->
             <b-button variant="info" @click="this.$refs.bbsFileinput.click()" >Choose File</b-button>
-            <!--currently, if user removed and upload the same file again, no file uploading will happen-->            
+            
+            <!--re-render hack-->            
             <input ref="bbsFileinput" 
               type="file" 
               id="bbsFileinput" 
               class="bbs__fileinput d-none" 
-              @change="uploadFile($event)"/>
+              @change="uploadFile($event)"
+              v-if="!rerenderFileinput" />
           </b-td>
           
         </b-tr>
@@ -127,7 +152,8 @@ export default {
         attachedFile: {
             attachedFileInfos: []
         }
-      }
+      },
+      rerenderFileinput:false
 
       /*items:{
         "id": 35,
@@ -259,10 +285,13 @@ export default {
           comp.$data.items.attachedFile.attachedFileInfos.push(response.data[0])
           console.log(comp.$data)
 
-          //refresh file input here
+          //refresh file input here - hack for file input only triggering on change event
           //this.$refs.bbsFileinput.remove()
+          comp.$data.rerenderFileinput = true;
           
-          
+        })
+        .then(function(response){
+          comp.$data.rerenderFileinput = false;
         })
         //file size limit apparently
         .catch(function (error) {
